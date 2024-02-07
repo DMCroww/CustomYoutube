@@ -11,14 +11,14 @@ let lastClip = ""
 let pollRunning = false
 let pollTimeoutId
 let idleTimeoutId
-let currVer = "1.5"
+let currVer = "1.6"
 
 let opt = { poll: 2000, rpcOn: true, rpcIdle: true, rpcIdleTo: 5 }
 // #end
 
 // SERVER #region
 
-const wsServ = new WebSocket.Server({ port: 80, pingTimeout: 10000, pingInterval: 5000 })
+const wsServ = new WebSocket.Server({ port: 80, pingTimeout: 100000, pingInterval: 30000 })
 wsServ.on("connection", (ws) => {
 	client = ws
 	console.log("Player connected.")
@@ -44,10 +44,10 @@ catch (e) { console.error(e) }
 const activityBase = {
 	state: 'Player ready.',
 	largeImageKey: 'customyoutube',
-	largeImageText: 'Youtube on https://dmcroww.live/ytb/',
+	largeImageText: 'Youtube Player on https://ytb.dmcroww.tech',
 	smallImageKey: 'idle',
 	smallImageText: 'Idle',
-	buttons: [{ label: "Try Croww's player", url: "https://dmcroww.live/ytb/" }]
+	buttons: [{ label: "Try Croww's player", url: "https://ytb.dmcroww.tech/" }]
 }
 let lastActivity = { ...activityBase }
 const rpc = new DiscordRPC.Client({ transport: 'ipc' })
@@ -74,7 +74,7 @@ function processMessage(message) {
 				console.log("Clipboard checking ON")
 				monitorClipboard()
 			} else {
-				console.log("Clipboard checking Running of off")
+				console.log("Clipboard checking OFF")
 			}
 		}
 		if (type == "ytbData") {
@@ -83,11 +83,11 @@ function processMessage(message) {
 			const activity = { ...activityBase }
 			activity.smallImageKey = paused ? "pause" : "play"
 			activity.smallImageText = paused ? "Paused" : "Playing"
-			activity.details = `Watching ${author}${isLive ? "'s livestream" : ''}` || '=author missing='
+			activity.details = `Watching ${author}'s ${isLive ? "livestream" : "video"}` || '=author missing='
 			activity.state = title || '=title missing='
 			if (!paused) activity.endTimestamp = Math.floor((Date.now() / 1000) + remaining)
-			activity.buttons = [{ label: "Watch on YouTube", url: `https://youtu.be/${id}` }, ...activity.buttons]
-			lastActivity = { ...activity }
+			activity.buttons = [{ label: "Watch on YouTube.com", url: `https://youtu.be/${id}` }, ...activity.buttons]
+			lastActivity = activity
 			if (opt.rpcOn) {
 				rpc.setActivity(activity)
 				if (paused && opt.rpcIdle)
@@ -110,17 +110,15 @@ function processMessage(message) {
 
 
 function monitorClipboard() {
-	try {
-		const clip = clipboardy.readSync()
-		// console.log(clip)
-		if (clip != lastClip) {
-			lastClip = clip
-			let id = false
+	clipboardy.read().then(copiedData => {
+		if (copiedData != lastClip) {
+			lastClip = copiedData
+			let id = ""
 
-			if (/\/watch\?v=/.test(clip))
-				id = clip.split('=')[1].split('&')[0]
-			else if (/youtu\.be\//.test(clip))
-				id = clip.split('.be/')[1].split('?')[0]
+			if (/\/watch\?v=/.test(copiedData))
+				id = copiedData.split('=')[1].split('&')[0]
+			else if (/youtu\.be\//.test(copiedData))
+				id = copiedData.split('.be/')[1].split('?')[0]
 
 			if (!id) return
 
@@ -129,11 +127,10 @@ function monitorClipboard() {
 		}
 		if (opt.poll) pollTimeoutId = setTimeout(monitorClipboard, opt.poll)
 		else pollRunning = false
-	} catch (e) {
-		clip = false
-		lastClip = clip
+	}).catch(e => {
+		lastClip = ""
 		pollTimeoutId = setTimeout(monitorClipboard, opt.poll)
 		console.error(e)
-	}
+	})
 }
 // #end

@@ -11,7 +11,7 @@ const listEl = document.querySelector("#list")
 const opts = settingsEl.querySelectorAll('input')
 
 
-let currVer = "1.5"
+let currVer = "1.6"
 let IDs = JSON.parse(window.localStorage.getItem('IDs') || "[]")
 let settings = JSON.parse(window.localStorage.getItem('settings') || "{}")
 
