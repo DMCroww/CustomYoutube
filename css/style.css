@@ -1,0 +1,282 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: black;
+}
+
+#ytb {
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+#ytb iframe {
+	width: 100vw;
+	height: 100vh;
+}
+
+#connect {
+	position: fixed;
+	top: 100vh;
+	left: 30vw;
+	width: 40vw;
+	overflow: auto;
+	transition: top 250ms ease-in-out;
+	border: .25em #222 solid;
+	border-radius: 2vw;
+	background-color: #080808;
+	color: white;
+	padding: 1em 1ch;
+	font-size: 2vh;
+}
+
+#connect div {
+	display: flex;
+	justify-content: center;
+}
+
+#connect button {
+	color: white;
+	background: #200;
+	border: none;
+	padding: .25em 2ch;
+	margin: 1em 2ch;
+	cursor: pointer;
+	border-radius: 1em;
+	font-size: inherit;
+	background-color: #0a0;
+}
+
+#connect button:first-child {
+	background-color: #a00;
+}
+
+#connect button:hover {
+	border: .1em solid white;
+}
+
+#connect.show {
+	top: 20vh;
+}
+
+#manual {
+	position: fixed;
+	top: 15vh;
+	right: 100vw;
+	transition: transform 500ms cubic-bezier(0.5, 0.5, 0, 1);
+	transform: translateX(3.5ch);
+	font-size: 3vh;
+	color: #888;
+	padding: 1em 3.3ch 1em 0;
+}
+
+#manual:hover,
+#manual:focus-within,
+#manual.show {
+	transform: translateX(100%);
+}
+
+#manual.disabled {
+	display: none
+}
+
+#manual div:not(#list) {
+	display: flex;
+	flex-direction: column;
+	background-color: #000;
+	border-right: 0.3ch solid magenta;
+	padding-left: 1ch;
+}
+
+#manual input {
+	background: #222;
+	color: #fff;
+}
+
+#manual input:placeholder-shown {
+	color: #AAA;
+}
+
+#manual #list {
+	display: flex;
+	flex-direction: column;
+}
+
+#controls {
+	position: fixed;
+	bottom: 30vh;
+	left: 100vw;
+	transition: transform 500ms cubic-bezier(0.5, 0.5, 0, 1);
+	transform: translateX(-3.6ch);
+	font-size: 5vh;
+	color: #888;
+	padding-left: 3.5ch;
+}
+
+#controls:hover,
+#controls.show {
+	transform: translateX(-100%);
+}
+
+#controls button {
+	padding-left: 0.5ch;
+	background: #000;
+	color: #888;
+	border: none;
+	border-left: .2ch solid #D0D;
+	font-size: inherit;
+	cursor: pointer;
+	width: 3ch;
+}
+
+#controls img {
+	height: 1em;
+	padding: .1em .1ch;
+}
+
+#settings {
+	position: fixed;
+	top: 100vh;
+	left: 50vw;
+	transition: top 250ms ease-in-out;
+	transition-property: top, opacity;
+	opacity: 0;
+	transform: translateX(-50%);
+	border: .25em grey solid;
+	border-radius: 1em;
+	padding: 1em 2ch;
+	display: flex;
+	flex-direction: column;
+	width: 40vw;
+	background-color: #111;
+	font-size: 1.5em;
+}
+
+#settings.show {
+	top: 20vh;
+	opacity: 1;
+}
+
+#settings * {
+	color: white;
+	font-size: inherit;
+}
+
+#settings #opt {
+	display: grid;
+	grid-template-columns: 3fr 2fr;
+	row-gap: .25em;
+	align-items: baseline;
+}
+
+#settings input {
+	background-color: #222;
+	width: 4ch;
+	margin: 0;
+}
+
+#settings input[type=checkbox],
+#settings input[type=range] {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	height: .8em;
+	border-radius: 1em;
+}
+
+#settings input[type=checkbox]::before,
+#settings input[type=range]::-webkit-slider-thumb {
+	width: 1em;
+	height: 1em;
+	cursor: pointer;
+	border-radius: 1em;
+}
+
+#settings input[type=range]::-webkit-slider-thumb:hover,
+#settings input[type=checkbox]:hover::before {
+	background-color: #A0A;
+}
+
+#settings input[type=checkbox] {
+	width: 2em;
+	background-color: #A44;
+	position: relative;
+	top: .2em;
+	transition: background-color 150ms;
+}
+
+#settings input[type=checkbox]:checked {
+	background-color: #0A0;
+}
+
+#settings input[type=checkbox]::before {
+	content: "";
+	position: absolute;
+	background-color: white;
+	top: -.1em;
+	left: .1em;
+	transition: transform 0.3s;
+}
+
+#settings input[type=checkbox]:checked::before {
+	transform: translateX(.8em);
+}
+
+#settings input[type=range] {
+	width: 60%;
+	background: #444;
+	outline: none;
+	padding: 0;
+}
+
+#settings input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	background: #fff;
+}
+
+#settings input[type=range]::-webkit-slider-thumb:active {
+	background: #FAF;
+}
+
+#settings input[type=range]::-webkit-slider-runnable-track {
+	background: #0000;
+}
+
+#settings #buttons {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 1em;
+}
+
+#settings .red {
+	color: #F88;
+	background-color: #400;
+}
+
+#settings .green {
+	color: #8F8;
+	background-color: #040;
+}
+
+#echo {
+	position: fixed;
+	top: 10vh;
+	left: 50vw;
+	transform: translateX(-50%);
+	opacity: 0;
+	transition: opacity 250ms ease-in-out 5s;
+	color: white;
+	background: radial-gradient(black, black 40%, transparent 70%);
+	padding: 1em 5ch;
+	font-size: 2em;
+}
+
+#echo.show {
+	opacity: 1;
+	transition: none;
+}
+
+:focus {
+	outline: none;
+}

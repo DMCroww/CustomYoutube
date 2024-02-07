@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Custom Youtube Player help</title>
+	<link href="css/help.css" rel="stylesheet">
+</head>
+
+<body>
+	<h1>Features:</h1>
+	<div>
+		<p>Monitors Clipboard and automatically adds copied YouTube links to a list of videos "to be played"</p>
+		<p>Autoplays queued videos</p>
+		<p>Saves list of unplayed videos for you so you can get right back where you were before leaving</p>
+		<p>Saves current video progress (requires 3rd party cookies to be enabled)</p>
+		<p>Discord RPC integration - Shows what you're watching (can be disabled in settings)</p>
+	</div>
+	<h1>Limitations:</h1>
+	<div>
+		<p>The player uses Youtube Embed API, so some videos might not be able to be played (this is up to the creator to decide)</p>
+		<p>For similar reasons, age restricted videos might have trouble playing. Enabling 3rd party cookies <i>might</i> solve this issue, as it allows the player to check for the account youre currently logged in. You can check if it worked by right-clicking the player > "Account"</p>
+		<p>Some users also reported that some AdBlocking extensions <i>might</i> block traffic to google. If the site doesnt work, try disabling your AdBlock for this site (ads should not play either way)</p>
+	</div>
+	<h1>Usage:</h1>
+	<div>
+		<h2 id="local">Local script:</h2>
+		<h3><i>0) Make sure you have Node.js installed and up-to-date</i></h3>
+		<h3>1) Download the script.</h3><a id="download" href="customYTB.js?" downloaad>[DOWNLOAD HERE]</a>
+		<h3>2) Install dependencies</h3>Open cmd.exe or powershell in the directory where the downloaded script is located. I recommend creating its own folder for it. Libraries "ws", "discord-rpc" and "node-clipboardy" are needed. <br>Run <span class="code">npm i ws discord-rpc node-clipboardy</span> in the console to install them
+		<h3>3) Run script using Node.js</h3>Run <span class="code">node ./customYTB.js</span> in the opened console.
+		<h3>4) Go to <a href="https://youtube.com">Youtube</a> and copy a video link</h3>Right click on video > "Copy link adress", or three dots > Share > Copy link. <br>Local script should recognize the link, and send it to player. If sounds are enabled in settings, you should hear a confirm sound after copying the link. You can keep adding more videos, and they'll be put in a "queue". In case of duplicate, the video wont be added again.
+		<h3>6) Enjoy YouTube without being blocked for using AdBlock.</h3>
+		<h3><i>7) Enable 3rd party cookies (optional)</i></h3>For enhanced features, enable 3rd party cookies if you have them disabled.<br><br>
+		<h2 id="manual">Manual mode:</h2>
+		<h3>1) Go to <a href="https://youtube.com">Youtube</a> and copy a video link</h3>Right click on video > "Copy link adress", or three dots > Share > Copy link.
+		<h3>2) Paste link in input field</h3>On the Player page, there is a little window on the left side (pops-out if you hover over it) with an input field. Paste your link there.
+		<h3>3) Video should be added</h3>If the link was valid, there should be a new entry below the input field.
+		<h3>4) Video should be played</h3>If there was no video queued, the paste event should prompt the player to play the video right away, otherwise it just adds to queue.
+		<h3>5) Enjoy YouTube without being blocked for using AdBlock.</h3>
+		<h3><i>6) Enable 3rd party cookies (optional)</i></h3>For enhanced features, enable 3rd party cookies if you have them disabled.<br><br>
+	</div>
+</body>
+<script>	document.querySelector('#download').href += Date.now()</script>
+
+</html>

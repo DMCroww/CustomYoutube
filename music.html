@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>YTMD WS control</title>
+	<link rel="icon" href='/favicon.ico'>
+	<link rel="stylesheet" href='css/music.css'>
+</head>
+
+<body>
+	<img id="cursor" src="res/pinkCur64.png">
+	<img id="bck">
+	<div id="contents">
+		<div id="volume">
+			<button class="command" data-command="player-volume-down"><img src="res/volD.png" alt="volume down"></button>
+			<input id=vol data-command="player-volume-set" type="range" max="100" step="5" value="100">
+			<button class="command" data-command="player-volume-up"><img src="res/volU.png" alt="volume up"></button>
+		</div>
+		<div id="cover">
+			<img>
+		</div>
+		<div id="info">
+			<h1 id=title>...</h1>
+			<h1 id=artist>...</h1>
+		</div>
+		<div id="controls">
+			<div id="progress">
+				<span id=elapsed>0:00</span>
+				<input id="prog" data-command="player-progress-set" type="range" max="100" step="1" value="0" readonly>
+				<span id=total>0:00</span>
+			</div>
+			<div id="buttons">
+				<button class="command" data-command="track-thumbs-down"><img src="res/thdown.png"></button>
+				<button class="command" data-command="track-previous">&#10074;&#9664;&#9664;</button>
+				<button class="command" data-command="track-play-pause" id="playbutt">&#9654;&#10074;&#10074;</button>
+				<button class="command" data-command="track-next">&#9654;&#9654;&#10074;</button>
+				<button class="command" data-command="track-thumbs-up"><img src="res/thup.png"></button>
+			</div>
+		</div>
+		<div id="themes">
+			<button id="voiceInput"><img src="res/mic.png"></button>
+			<button data-type="stay"><img src="res/force.png"></button>
+			<button data-type="color"><img src="res/theme.png"></button>
+			<button data-type="bright"><img src="res/bright.png"></button>
+		</div>
+	</div>
+	<script src="js/music.js"></script>
+</body>
+
+</html>

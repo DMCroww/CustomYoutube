@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Player</title>
+	<link href="css/style.css" rel="stylesheet">
+	<link rel="icon" href='favicon.ico'>
+</head>
+
+<body>
+	<div id="ytb">
+		<div id="player"></div>
+	</div>
+	<div id="sounds">
+		<audio id="confirm" src="res/confirm.mp3"></audio>
+		<audio id="warn" src="res/warn.mp3"></audio>
+		<audio id="error" src="res/error.mp3"></audio>
+	</div>
+	<div id="controls" class="show">
+		<button onclick="nextVid()"><img src="res/next.png"></button>
+		<button onclick="toggleFS()"><img src="res/fs.png"></button>
+		<button onclick="settingsEl.classList.toggle('show')"><img src="res/settings.png"></button>
+		<a href="help.html" target="_blank"><button><img src="res/help.png"></button></a>
+	</div>
+	<div id="connect" class="show">
+		<h1>Interface mode:</h1>
+		<h3>Manual:</h3>
+		<p>Manually paste youtube links into provided field on left side. <br>Only player functionality enabled. (more info <a href=help.html#manual>here</a>)</p>
+		<h3>Automated:</h3>
+		<p>Enables automatic detection of copied youtube links and provides Discord presence (shows what you're watching)<br>Requires local stript running in Node.js (more info <a href=help.html#local>here</a>)</p>
+		<div>
+			<button onclick="setMode('manual')">Manual</button>
+			<button onclick="setMode('auto')">Automated</button>
+		</div>
+	</div>
+	<div id="settings">
+		<div id="opt">
+			<label for="mode">Input mode:</label>
+			<div>
+				<span>Manual</span>
+				<input id="mode" type="checkbox" checked="true">
+				<span>Automated</span>
+			</div>
+			<label for="rpc">Enable Discord presence?</label>
+			<input id="rpc" type="checkbox" checked="true">
+			<label for="rpcIdle">Show idle status?</label>
+			<input id="rpcIdle" type="checkbox" checked="true">
+			<label for="rpcIdleTo">Idle timeout</label>
+			<div>
+				<input id="rpcIdleTo" type="number" min="0" max="60" step="1">
+				<span>minutes</span>
+			</div>
+			<label for="sounds">Enable sounds?</label>
+			<input id="sounds" type="checkbox" checked="true">
+			<label for="vol">Sounds volume (%)</label>
+			<div>
+				<input id="vol" type="range" min="0.1" max="1" step="0.1" oninput="this.parentElement.querySelector('#volVal').innerText=Math.floor(parseFloat(this.value)*100)+'%'">
+				<span id="volVal"></span>
+			</div>
+			<label for="clip">Clipboard interval</label>
+			<div>
+				<input id="clip" type="number" min="0" max="600" step="0.2">
+				<span>seconds</span>
+			</div>
+		</div>
+		<div id="buttons">
+			<button class="red" onclick="settingsEl.className = ''">Close</button>
+			<button class="green" onclick="saveSettings(true)">Save & close</button>
+			<button class="green" onclick="saveSettings(false)">Save</button>
+		</div>
+	</div>
+	<span id="echo"></span>
+
+	<div id="manual" class="disabled">
+		<div>
+			<input oninput="processLink(this)" placeholder="Paste URL">
+			<p>Queued IDs:</p>
+			<div id="list">
+			</div>
+		</div>
+	</div>
+
+
+	<script src="js/youtubeAPI.js"></script>
+	<script src="js/base-func.js"></script>
+	<script src="js/setup.js"></script>
+	<script src="js/socket.js"></script>
+	<script src="js/videoProcess.js"></script>
+	<script src="js/controls.js"></script>
+</body>
+
+</html>

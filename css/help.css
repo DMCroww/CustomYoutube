@@ -1,0 +1,37 @@
+body {
+	background: black;
+	color: white;
+	margin: 0;
+	padding: 0;
+	font-size: 2vh;
+	position: absolute;
+	top: 0;
+	left: 50vw;
+	width: 80vw;
+	max-width: 90ch;
+	transform: translateX(-50%);
+}
+
+div {
+	max-width: 90ch;
+	overflow: auto;
+	border: .25em #222 solid;
+	border-right: none;
+	border-radius: 2vw;
+	background-color: #202020;
+	padding: .1em 3ch;
+}
+
+h1,
+h2,
+h3 {
+	margin: 1em -1ch .25em
+}
+
+
+
+.code {
+	background: #000;
+	font-family: monospace;
+	padding: 0 1ch;
+}
