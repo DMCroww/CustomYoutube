@@ -13,7 +13,7 @@ let pollTimeoutId
 let idleTimeoutId
 let currVer = "1.6"
 
-let opt = { poll: 2000, rpcOn: true, rpcIdle: true, rpcIdleTo: 5 }
+let opt = { poll: 2000, rpcOn: true, rpcIdle: true, rpcIdleTimeout: 5 }
 // #end
 
 // SERVER #region
@@ -24,7 +24,10 @@ wsServ.on("connection", (ws) => {
 	console.log("Player connected.")
 	ws.on("message", message => {
 		client = ws
-		processMessage(message)
+		try {
+			let { type, data } = JSON.parse(message)
+			return wsFunctions[type](data) || null
+		} catch (e) { console.error(e) }
 	})
 	ws.on('close', () => {
 		client = false
@@ -37,7 +40,7 @@ wsServ.on("connection", (ws) => {
 // #end
 
 // DISCORD RPC #region
-const clientId = "1088721467803443211"
+const clientId = "1096792159031664670"
 try { DiscordRPC.register(clientId) }
 catch (e) { console.error(e) }
 
@@ -63,50 +66,56 @@ rpc.login({ clientId }).catch(console.error)
 function send(data, type = "data") {
 	if (client) client.send(JSON.stringify({ type, data }))
 }
-function processMessage(message) {
-	try {
-		let { type, data } = JSON.parse(message)
-		if (type == "settings") {
-			opt = { ...opt, ...data }
-			if (!opt.rpcOn) rpc.clearActivity()
-			else rpc.setActivity(lastActivity)
-			if (opt.poll && !pollRunning) {
-				console.log("Clipboard checking ON")
-				monitorClipboard()
-			} else {
-				console.log("Clipboard checking OFF")
-			}
+
+const wsFunctions = {
+	settings: (data) => {
+		opt = { ...opt, ...data }
+		if (opt.rpcOn) rpc.setActivity(lastActivity)
+		else rpc.clearActivity()
+
+		if (!opt.poll && !pollRunning) {
+			console.log("Clipboard checking ON")
+			monitorClipboard()
+		} else {
+			console.log("Clipboard checking OFF")
 		}
-		if (type == "ytbData") {
-			const { isLive, state, title, author, remaining, id } = data
-			const paused = state == 2
-			const activity = { ...activityBase }
-			activity.smallImageKey = paused ? "pause" : "play"
-			activity.smallImageText = paused ? "Paused" : "Playing"
-			activity.details = `Watching ${author}'s ${isLive ? "livestream" : "video"}` || '=author missing='
-			activity.state = title || '=title missing='
-			if (!paused) activity.endTimestamp = Math.floor((Date.now() / 1000) + remaining)
-			activity.buttons = [{ label: "Watch on YouTube.com", url: `https://youtu.be/${id}` }, ...activity.buttons]
-			lastActivity = activity
-			if (opt.rpcOn) {
-				rpc.setActivity(activity)
-				if (paused && opt.rpcIdle)
-					idleTimeoutId = setTimeout(() => {
-						rpc.setActivity({
-							...activityBase,
-							details: 'Player paused.',
-							state: 'Idle. Fell asleep?'
-						})
-					}, (opt.rpcIdleTo * 60 * 1000) + 1)
-				else clearTimeout(idleTimeoutId)
-			} else rpc.clearActivity()
+	},
+	ytbData: (data) => {
+		const { isLive: isLivestream, state: playerState, title, author, remaining, id } = data
+		const paused = playerState == 2
+		const activity = {
+			...activityBase,
+			smallImageKey: paused ? "pause" : "play",
+			smallImageText: paused ? "Paused" : "Playing",
+			details: `Watching ${author}'s ${isLivestream ? "livestream" : "video"}` || '=author missing=',
+			state: title || '=title missing=',
 		}
-		if (type == "end" && opt.rpcOn)
+		activity.buttons = [{ label: "Watch on YouTube.com", url: `https://youtu.be/${id}` }, ...activityBase.buttons]
+		if (!paused) activity.endTimestamp = Math.floor((Date.now() / 1000) + remaining)
+		lastActivity = activity
+		if (opt.rpcOn) {
+			rpc.setActivity(activity)
+			if (paused && opt.rpcIdle)
+				idleTimeoutId = setTimeout(() => {
+					rpc.setActivity({
+						...activityBase,
+						state: 'Player paused.',
+						details: 'Idle. Fell asleep?'
+					})
+				}, (opt.rpcIdleTimeout * 60 * 1000) + 1)
+			else clearTimeout(idleTimeoutId)
+		} else rpc.clearActivity()
+	},
+	end: () => {
+		if (opt.rpcOn) {
 			rpc.setActivity({ ...activityBase, state: 'Player queue empty.' })
-
-	} catch (e) { console.error(e) }
+			if (opt.rpcIdle) {
+				clearTimeout(idleTimeoutId)
+				idleTimeoutId = setTimeout(() => { rpc.clearActivity() }, (opt.rpcIdleTimeout * 60 * 1000) + 1)
+			}
+		} else rpc.clearActivity()
+	}
 }
-
 
 
 function monitorClipboard() {
@@ -115,9 +124,9 @@ function monitorClipboard() {
 			lastClip = copiedData
 			let id = ""
 
-			if (/\/watch\?v=/.test(copiedData))
-				id = copiedData.split('=')[1].split('&')[0]
-			else if (/youtu\.be\//.test(copiedData))
+			if (copiedData.includes("youtube.com") && copiedData.includes("v="))
+				id = copiedData.split('v=')[1].split('&')[0]
+			else if (copiedData.includes("youtu.be/"))
 				id = copiedData.split('.be/')[1].split('?')[0]
 
 			if (!id) return
