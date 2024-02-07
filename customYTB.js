@@ -1,5 +1,34 @@
 // REQUIRES #region
 console.clear()
+const { spawnSync } = require('child_process')
+
+// List of libraries to check for
+const librariesToCheck = ['ws', 'discord-rpc', 'node-clipboardy']
+let dependencyError = false
+// Check if each library is installed, and install it if it's missing
+librariesToCheck.forEach(l => checkDependencies(l))
+
+// Function to check if a library is installed
+function checkDependencies(library) {
+	try {
+		require.resolve(library)
+		return
+	} catch (error) {
+		console.log(`Installing ${library}...`)
+		// Using npm directly doesnt work, hence 'cmd.exe' workaround for now.
+		const installProcess = spawnSync("cmd.exe", ['/d', '/s', '/c', 'npm', 'i', library], { stdio: 'ignore' })
+		if (installProcess.status === 0)
+			return console.log(`${library} installed successfully.`)
+		console.error(`Failed to install ${library}.`)
+		dependencyError = true
+	}
+}
+
+if (dependencyError) {
+	console.error("Dependencies failed to install. Aborting launch.")
+	process.exit(1)
+} else console.log("Dependencies present. Launching...")
+
 const clipboardy = require('node-clipboardy')
 const WebSocket = require("ws")
 const DiscordRPC = require('discord-rpc')

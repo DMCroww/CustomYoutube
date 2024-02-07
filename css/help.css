@@ -30,8 +30,8 @@ h3 {
 
 
 
-.code {
-	background: #000;
+code {
+	background: #000000;
 	font-family: monospace;
 	padding: 0 1ch;
 }
