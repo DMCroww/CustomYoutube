@@ -25,18 +25,26 @@ Custom youtube player that circumvents the AdBlocking drama on YouTube by using 
 ## Usage:
 
 1) Open the [custom player](https://ytb.dmcroww.tech) in your browser
+
 2) Go to [Youtube](https://youtube.com) and **copy a video link**
+   
    Right click on video > *Copy link adress*, or click the three dots > *Share* > *Copy link*. 
    - **Automated mode**:
-      Local script will recognize the link, and send it through WebSocket to the player. 
+      
+	  Local script will recognize the link, and send it through WebSocket to the player. 
       - If sounds are enabled in settings, you should hear a *ding* sound after copying the link. 
       - You can keep adding more videos. They'll be put in a queue.
       - Duplicate videos won't be added.
    - **Manual mode**:
       On the Player page, paste your link in the input field at the top of the queue list (left side of screen).
+
 3) Video should be added
+   
    If the link was valid, there should be a new entry in the queue list.
-   - If the queue list was empty, the player will play the video right away.
+   - If the queue list was empty and **autoplay** is enabled, the player will play the video right away.
+
 4) Enjoy YouTube without being blocked or slowed down for using AdBlock.
+
 5) *optional* Enable 3rd party cookies
+   
    For enhanced features like history and playback resuming, enable 3rd party cookies if you have them disabled.
