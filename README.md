@@ -1,5 +1,5 @@
 # CustomYoutube
-Custom youtube player that circumvents the AdBlocking drama on YouTube by using an embed player, since those cant include ads as Google can't guarantee the validity of the advertisement to the advertisers. This player has several bonus features like queue autoplay, DiscordRPC, clipboard monitoring and more. Some of theese require a local Node.js script to be run on your machine. 
+Custom youtube embed player that has several bonus features like DiscordRPC, clipboard monitoring, queue autopaste, autoplay and more. Some of theese require a local Node.js script to be run on your machine. 
 
 ## Features:
 
@@ -12,7 +12,8 @@ Custom youtube player that circumvents the AdBlocking drama on YouTube by using 
 ## Limitations:
 
 - The [CustomPlayer website](https://ytb.dmcroww.tech) uses Youtube Embed Player, so some videos might not be able to be played (this is up to the creator to decide)
-- For same reason, age restricted videos will not play. Enabling 3rd party cookies *might* solve this issue, as it allows the player to check for the account you're currently logged in on Youtube.com. You can check if it worked by right-clicking the player > "Account"
+- For same reason, no Ads will play as Google can't guarantee the validity of the advertisement to the advertisers.
+- Age restricted videos will not play either unless 3rd party cookies are enabled. That *might* solve this issue, as it allows the player to check for the account you're currently logged in on Youtube.com. You can check if it worked by right-clicking the player > "Account"
 - Some users also reported that some AdBlocking extensions *might* block traffic to google. If the site doesn't work, try disabling your AdBlock for the player's site (ads should not play either way)
 
 ## Automated mode (local script) Installation:
