@@ -59,7 +59,7 @@ body {
 	top: 20vh;
 }
 
-#manual {
+#queue {
 	position: fixed;
 	top: 15vh;
 	right: 100vw;
@@ -70,9 +70,9 @@ body {
 	padding: 1em 3.3ch 1em 0;
 }
 
-#manual:hover,
-#manual:focus-within,
-#manual.show {
+#queue:hover,
+#queue:focus-within,
+#queue.show {
 	transform: translateX(100%);
 }
 
@@ -80,7 +80,7 @@ body {
 	display: none
 }
 
-#manual div:not(#list) {
+#queue div:not(#list) {
 	display: flex;
 	flex-direction: column;
 	background-color: #000;
@@ -88,16 +88,16 @@ body {
 	padding-left: 1ch;
 }
 
-#manual input {
+#queue input {
 	background: #222;
 	color: #fff;
 }
 
-#manual input:placeholder-shown {
+#queue input:placeholder-shown {
 	color: #AAA;
 }
 
-#manual #list {
+#queue #list {
 	display: flex;
 	flex-direction: column;
 }
@@ -175,8 +175,8 @@ body {
 	margin: 0;
 }
 
-#settings input[type=checkbox],
-#settings input[type=range] {
+input[type=checkbox],
+input[type=range] {
 	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -184,20 +184,20 @@ body {
 	border-radius: 1em;
 }
 
-#settings input[type=checkbox]::before,
-#settings input[type=range]::-webkit-slider-thumb {
+input[type=checkbox]::before,
+input[type=range]::-webkit-slider-thumb {
 	width: 1em;
 	height: 1em;
 	cursor: pointer;
 	border-radius: 1em;
 }
 
-#settings input[type=range]::-webkit-slider-thumb:hover,
-#settings input[type=checkbox]:hover::before {
+input[type=range]::-webkit-slider-thumb:hover,
+input[type=checkbox]:hover::before {
 	background-color: #A0A;
 }
 
-#settings input[type=checkbox] {
+input[type=checkbox] {
 	width: 2em;
 	background-color: #A44;
 	position: relative;
@@ -205,11 +205,11 @@ body {
 	transition: background-color 150ms;
 }
 
-#settings input[type=checkbox]:checked {
+input[type=checkbox]:checked {
 	background-color: #0A0;
 }
 
-#settings input[type=checkbox]::before {
+input[type=checkbox]::before {
 	content: "";
 	position: absolute;
 	background-color: white;
@@ -218,28 +218,28 @@ body {
 	transition: transform 0.3s;
 }
 
-#settings input[type=checkbox]:checked::before {
+input[type=checkbox]:checked::before {
 	transform: translateX(.8em);
 }
 
-#settings input[type=range] {
+input[type=range] {
 	width: 60%;
 	background: #444;
 	outline: none;
 	padding: 0;
 }
 
-#settings input[type=range]::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	appearance: none;
 	background: #fff;
 }
 
-#settings input[type=range]::-webkit-slider-thumb:active {
+input[type=range]::-webkit-slider-thumb:active {
 	background: #FAF;
 }
 
-#settings input[type=range]::-webkit-slider-runnable-track {
+input[type=range]::-webkit-slider-runnable-track {
 	background: #0000;
 }
 

@@ -10,7 +10,7 @@ function connect() {
 	socket.onopen = () => {
 		echo("WebSocket connected.")
 		setTimeout(() => {
-			if (IDs.length && !playing) {
+			if (IDs.length && !playing && settings.autoplay) {
 				playing = true
 				playVid(IDs[0])
 			}

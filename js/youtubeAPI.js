@@ -8,7 +8,7 @@ var YT
 if (!window["YT"]) YT = { loading: 0, loaded: 0 }
 var YTConfig
 
-if (!window["YTConfig"]) YTConfig = { "host": "https://dmcroww.live" }
+if (!window["YTConfig"]) YTConfig = { "host": "http://ytb.dmcroww.tech" }
 
 if (!YT.loading) {
 	YT.loading = 1;

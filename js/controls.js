@@ -50,3 +50,7 @@ const modes = {
 		if (!socket) connect()
 	}
 }
+function toggleAutoplay(el) {
+	settings.autoplay = el.checked
+	saveSettings(true)
+}

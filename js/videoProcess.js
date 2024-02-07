@@ -17,7 +17,7 @@ function addId(id) {
 	IDs.push(id)
 	saveIDs()
 	echo(`Added ID: ${id}`, "confirm")
-	if (!playing) playing = playVid(IDs[0])
+	if (!playing && settings.autoplay) playing = playVid(IDs[0])
 	listEl.innerHTML = ''
 	IDs.forEach(id => listEl.innerHTML += `<a href='https://youtu.be/${id}' target='_blank'>${id}</a>`)
 }
@@ -30,7 +30,14 @@ function playVid(id) {
 			events: {
 				'onStateChange': (event) => {
 					let state = event.data
-					if (state == 0) nextVid()
+					if (state == 0) {
+						if (settings.autoplay) nextVid()
+						else {
+							playing = false
+							controlsEl.className = 'show'
+							setTimeout(() => { controlsEl.className = '' }, 15000)
+						}
+					}
 					else if (state == 1 || state == 2) {
 						const { isLive, title, author, video_id } = event.target.getVideoData()
 						let remaining = event.target.getDuration() - event.target.getCurrentTime()
@@ -61,8 +68,12 @@ function nextVid() {
 		playing = false
 		send(true, "end")
 	}
-	listEl.innerHTML = ''
-	IDs.forEach(id => listEl.innerHTML += `<a href='https://youtu.be/${id}' target='_blank'>${id}</a>`)
+	updateQueueList()
+}
+
+function force(vidId) {
+	IDs = IDs.filter(id => id != vidId)
+	playVid(vidId)
 }
 
 function saveIDs() {

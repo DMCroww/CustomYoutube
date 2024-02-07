@@ -73,12 +73,13 @@
 	</div>
 	<span id="echo"></span>
 
-	<div id="manual" class="disabled">
+	<div id="queue">
 		<div>
-			<input oninput="processLink(this)" placeholder="Paste URL">
+			<label for="auoplay">Autoplay</label>
+			<input id="autoplay" type="checkbox" checked="true" onchange="toggleAutoplay(this)">
+			<input id="manual" class="disabled" oninput="processLink(this)" placeholder="Paste URL">
 			<p>Queued IDs:</p>
-			<div id="list">
-			</div>
+			<div id="list"></div>
 		</div>
 	</div>
 

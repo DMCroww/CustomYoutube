@@ -1,38 +1,32 @@
 // REQUIRES #region
 console.clear()
-const { spawnSync } = require('child_process')
+const { spawnSync } = require('child_process');
 
-// List of libraries to check for
-const librariesToCheck = ['ws', 'discord-rpc', 'node-clipboardy']
-let dependencyError = false
-// Check if each library is installed, and install it if it's missing
-librariesToCheck.forEach(l => checkDependencies(l))
-
-// Function to check if a library is installed
-function checkDependencies(library) {
+// Function to fetch a library if it doesn't exist
+function getLibrary(library) {
 	try {
-		require.resolve(library)
-		return
+		return require(library);
 	} catch (error) {
-		console.log(`Installing ${library}...`)
-		// Using npm directly doesnt work, hence 'cmd.exe' workaround for now.
 		const installProcess = spawnSync("cmd.exe", ['/d', '/s', '/c', 'npm', 'i', library], { stdio: 'ignore' })
-		if (installProcess.status === 0)
-			return console.log(`${library} installed successfully.`)
-		console.error(`Failed to install ${library}.`)
-		dependencyError = true
+		if (installProcess.status === 0) {
+			console.log(`'${library}' installed successfully.`);
+			// Retry requiring the library
+			try {
+				return require(library);
+			} catch (error) {
+				console.error(`Failed to initialize '${library}'. Please try restarting the script.`);
+			}
+		} else console.error(`Failed to install '${library}'.`);
+		process.exit(1);
 	}
 }
 
-if (dependencyError) {
-	console.error("Dependencies failed to install. Aborting launch.")
-	process.exit(1)
-} else console.log("Dependencies present. Launching...")
+const clipboardy = getLibrary('node-clipboardy');
+const WebSocket = getLibrary('ws');
+const DiscordRPC = getLibrary('discord-rpc');
 
-const clipboardy = require('node-clipboardy')
-const WebSocket = require("ws")
-const DiscordRPC = require('discord-rpc')
 // #end
+
 // VARS #region
 let client = false
 
@@ -55,7 +49,7 @@ wsServ.on("connection", (ws) => {
 		client = ws
 		try {
 			let { type, data } = JSON.parse(message)
-			return wsFunctions[type](data) || null
+			if (wsFunctions[type]) wsFunctions[type](data)
 		} catch (e) { console.error(e) }
 	})
 	ws.on('close', () => {
@@ -66,45 +60,17 @@ wsServ.on("connection", (ws) => {
 	})
 	send(currVer, "verCheck")
 })
-// #end
-
-// DISCORD RPC #region
-const clientId = "1096792159031664670"
-try { DiscordRPC.register(clientId) }
-catch (e) { console.error(e) }
-
-const activityBase = {
-	state: 'Player ready.',
-	largeImageKey: 'customyoutube',
-	largeImageText: 'Youtube Player on https://ytb.dmcroww.tech',
-	smallImageKey: 'idle',
-	smallImageText: 'Idle',
-	buttons: [{ label: "Try Croww's player", url: "https://ytb.dmcroww.tech/" }]
-}
-let lastActivity = { ...activityBase }
-const rpc = new DiscordRPC.Client({ transport: 'ipc' })
-rpc.on('ready', () => {
-	console.log('Connected to Discord.')
-	if (opt.rpcOn) rpc.setActivity(activityBase)
-})
-rpc.login({ clientId }).catch(console.error)
-
-// #end
-
-// MAIN FUNCTIONS #region
-function send(data, type = "data") {
-	if (client) client.send(JSON.stringify({ type, data }))
-}
 
 const wsFunctions = {
 	settings: (data) => {
 		opt = { ...opt, ...data }
+		console.log(opt)
 		if (opt.rpcOn) rpc.setActivity(lastActivity)
 		else rpc.clearActivity()
 
-		if (!opt.poll && !pollRunning) {
+		if (opt.poll > 0) {
 			console.log("Clipboard checking ON")
-			monitorClipboard()
+			if (!pollRunning) monitorClipboard()
 		} else {
 			console.log("Clipboard checking OFF")
 		}
@@ -146,6 +112,35 @@ const wsFunctions = {
 	}
 }
 
+// #end
+
+// DISCORD RPC #region
+const clientId = "1096792159031664670"
+try { DiscordRPC.register(clientId) }
+catch (e) { console.error(e) }
+
+const activityBase = {
+	state: 'Player ready.',
+	largeImageKey: 'customyoutube',
+	largeImageText: 'Youtube Player on https://ytb.dmcroww.tech',
+	smallImageKey: 'idle',
+	smallImageText: 'Idle',
+	buttons: [{ label: "Try Croww's player", url: "https://ytb.dmcroww.tech/" }]
+}
+let lastActivity = { ...activityBase }
+const rpc = new DiscordRPC.Client({ transport: 'ipc' })
+rpc.on('ready', () => {
+	console.log('Connected to Discord.')
+	if (opt.rpcOn) rpc.setActivity(activityBase)
+})
+rpc.login({ clientId }).catch(console.error)
+
+// #end
+
+// MAIN FUNCTIONS #region
+function send(data, type = "data") {
+	if (client) client.send(JSON.stringify({ type, data }))
+}
 
 function monitorClipboard() {
 	clipboardy.read().then(copiedData => {
@@ -163,7 +158,7 @@ function monitorClipboard() {
 			console.log('Detected YouTube ID: ' + id)
 			send(id, "id")
 		}
-		if (opt.poll) pollTimeoutId = setTimeout(monitorClipboard, opt.poll)
+		if (opt.poll > 0) pollTimeoutId = setTimeout(monitorClipboard, opt.poll)
 		else pollRunning = false
 	}).catch(e => {
 		lastClip = ""
