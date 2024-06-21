@@ -1,3 +1,41 @@
+let player
+
+function setPlayer(id) {
+	player = new YT.Player('player', {
+		width: Math.floor((window.innerHeight / 9) * 16),
+		height: Math.floor(window.innerHeight),
+		video_id: null,
+		events: {
+			'onStateChange': playerStateChange,
+			'onReady': (event) => { event.target.playVideo() }
+		},
+		playerVars: { controls: 1, kb: 1, fs: 0, modestbranding: 1, rel: 0, },
+	})
+}
+
+function playerStateChange(event) {
+	switch (event.data) {
+		case 0:
+			let currentId = event.target.getVideoData().video_id
+			IDs = IDs.filter(id => id != currentId)
+			if (!settings.autoplay) {
+				playing = false
+				controlsEl.className = 'show'
+				setTimeout(() => { controlsEl.className = '' }, 15000)
+			} else nextVid()
+			break;
+
+		case 1:
+		case 2:
+			send("server", {
+				...event.target.getVideoData(),
+				state: event.data,
+				remaining: event.target.getDuration() - event.target.getCurrentTime()
+			}, "ytbData")
+			break;
+	}
+}
+
 function processLink(obj) {
 	let url = obj.value
 	if (url !== lastUrl) {
@@ -13,67 +51,27 @@ function processLink(obj) {
 }
 
 function addId(id) {
-	if (IDs.includes(id)) return echo("Already in list.", "error")
+	if (IDs.includes(id))
+		return echo("Already in list.", "warn")
 	IDs.push(id)
 	saveIDs()
 	echo(`Added ID: ${id}`, "confirm")
 	if (!playing && settings.autoplay) playing = playVid(IDs[0])
-	listEl.innerHTML = ''
-	IDs.forEach(id => listEl.innerHTML += `<a href='https://youtu.be/${id}' target='_blank'>${id}</a>`)
+	updateQueueList()
 }
-function playVid(id) {
-	try {
-		if (!player) player = new YT.Player('player', {
-			width: 1920,
-			height: 1080,
-			videoId: id,
-			events: {
-				'onStateChange': (event) => {
-					let state = event.data
-					if (state == 0) {
-						if (settings.autoplay) nextVid()
-						else {
-							playing = false
-							controlsEl.className = 'show'
-							setTimeout(() => { controlsEl.className = '' }, 15000)
-						}
-					}
-					else if (state == 1 || state == 2) {
-						const { isLive, title, author, video_id } = event.target.getVideoData()
-						let remaining = event.target.getDuration() - event.target.getCurrentTime()
 
-						send({ state, isLive, title, author, video_id, remaining }, "ytbData")
-					}
-				},
-				'onReady': (event) => {
-					event.target.playVideo()
-				}
-			},
-			playerVars: { controls: 1, kb: 1, fs: 0, modestbranding: 1, rel: 0, },
-		})
-		else player.loadVideoById(id)
+function playVid(id) {
+	if (player) {
+		player.loadVideoById(id)
 		return true
-	} catch (e) {
-		console.error(e)
-		return false
-	}
+	} else return setPlayer(id)
 }
 
 function nextVid() {
 	IDs.shift()
 	saveIDs()
-	if (IDs.length) {
-		playing = playVid(IDs[0])
-	} else {
-		playing = false
-		send(true, "end")
-	}
+	playing = IDs.length ? playVid(IDs[0]) : false
 	updateQueueList()
-}
-
-function force(vidId) {
-	IDs = IDs.filter(id => id != vidId)
-	playVid(vidId)
 }
 
 function saveIDs() {

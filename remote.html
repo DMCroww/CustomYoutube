@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CYTP Remote</title>
+	<link rel="stylesheet" href="css/remote.css">
+</head>
+
+<body>
+	<div id="connect">
+		<input type="text" name="ipaddr" id="ipaddr">
+		<button onclick="connect()">Connect</button>
+	</div>
+	<div id="main" class="hide">
+		<img id="thumb" src="">
+		<h2 id="title"></h2>
+		<h3 id="author"></h3>
+		<div id="controls">
+			<button onclick="showQueue()"><img src="res/list.png" alt="queue"></button>
+			<button onclick="togglePlayback()">&#9654;&#10074;&#10074;</button>
+			<button onclick="nextVideo()">&#9654;&#9654;&#10074;</button>
+		</div>
+		<input type="text" onchange="addVideo(this)">
+	</div>
+	<h2 id="popup" class="hide"></h2>
+	<script src="js/remote.js"></script>
+	<script src="js/socket.js"></script>
+</body>
+
+</html>

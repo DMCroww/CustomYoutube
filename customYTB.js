@@ -6,7 +6,7 @@ const { spawnSync } = require('child_process');
 function getLibrary(library) {
 	try {
 		return require(library);
-	} catch (error) {
+	} catch (e) {
 		const installProcess = spawnSync("cmd.exe", ['/d', '/s', '/c', 'npm', 'i', library], { stdio: 'ignore' })
 		if (installProcess.status === 0) {
 			console.log(`'${library}' installed successfully.`);
@@ -15,67 +15,73 @@ function getLibrary(library) {
 				return require(library);
 			} catch (error) {
 				console.error(`Failed to initialize '${library}'. Please try restarting the script.`);
+				process.exit(1);
 			}
 		} else console.error(`Failed to install '${library}'.`);
 		process.exit(1);
 	}
 }
 
-const clipboardy = getLibrary('node-clipboardy');
+// const clipboardy = getLibrary('node-clipboardy');
+const clipboardy = require('node-clipboardy');
 const WebSocket = getLibrary('ws');
 const DiscordRPC = getLibrary('discord-rpc');
 
 // #end
 
 // VARS #region
-let client = false
+let clients = { player: false, remote: false }
 
 let lastClip = ""
-let pollRunning = false
-let pollTimeoutId
-let idleTimeoutId
-let currVer = "1.6"
+let pollIntervalId = 0
+let idleTimeoutId = 0
+let currVer = "1.7"
 
-let opt = { poll: 2000, rpcOn: true, rpcIdle: true, rpcIdleTimeout: 5 }
+let opt = { poll: 2000, rpcOn: true, rpcIdle: true, rpcIdleTimeout: 5, remote: true }
 // #end
 
 // SERVER #region
 
 const wsServ = new WebSocket.Server({ port: 80, pingTimeout: 100000, pingInterval: 30000 })
 wsServ.on("connection", (ws) => {
-	client = ws
 	console.log("Player connected.")
 	ws.on("message", message => {
-		client = ws
 		try {
-			let { type, data } = JSON.parse(message)
+			let { id, type, data } = JSON.parse(message)
+
+			clients[id] = ws
 			if (wsFunctions[type]) wsFunctions[type](data)
 		} catch (e) { console.error(e) }
 	})
 	ws.on('close', () => {
-		client = false
+		clients = Object.entries(clients).filter(cli => cli != ws)
+
 		rpc.clearActivity()
-		clearTimeout(pollTimeoutId)
+		clearTimeout(pollIntervalId)
 		clearTimeout(idleTimeoutId)
 	})
-	send(currVer, "verCheck")
+	send("player", currVer, "verCheck")
 })
 
 const wsFunctions = {
 	settings: (data) => {
 		opt = { ...opt, ...data }
-		console.log(opt)
 		if (opt.rpcOn) rpc.setActivity(lastActivity)
 		else rpc.clearActivity()
+		if (opt.remote) send("player", getIpAddr(), "ip")
 
-		if (opt.poll > 0) {
+		clearInterval(pollIntervalId)
+		pollIntervalId = 0
+		if (opt.poll > 0 && !pollIntervalId) {
 			console.log("Clipboard checking ON")
-			if (!pollRunning) monitorClipboard()
-		} else {
+			monitorClipboard()
+			pollIntervalId = setInterval(() => { monitorClipboard() }, opt.poll)
+		} else
 			console.log("Clipboard checking OFF")
-		}
+
 	},
 	ytbData: (data) => {
+		if (opt.remote) send("remote", data, "ytbData")
 		const { isLive: isLivestream, state: playerState, title, author, remaining, id } = data
 		const paused = playerState == 2
 		const activity = {
@@ -138,13 +144,18 @@ rpc.login({ clientId }).catch(console.error)
 // #end
 
 // MAIN FUNCTIONS #region
-function send(data, type = "data") {
-	if (client) client.send(JSON.stringify({ type, data }))
+function send(to, data, type = "data") {
+	if (clients[to]) clients[to].send(JSON.stringify({ id: "server", type, data }))
+	else setTimeout(() => {
+		if (clients[to]) clients[to].send(JSON.stringify({ id: "server", type, data }))
+	}, 1000);
 }
 
 function monitorClipboard() {
-	clipboardy.read().then(copiedData => {
+	try {
+		let copiedData = clipboardy.readSync()
 		if (copiedData != lastClip) {
+			console.log("ClipCheck:", copiedData)
 			lastClip = copiedData
 			let id = ""
 
@@ -156,14 +167,28 @@ function monitorClipboard() {
 			if (!id) return
 
 			console.log('Detected YouTube ID: ' + id)
-			send(id, "id")
+			send("player", id, "id")
 		}
-		if (opt.poll > 0) pollTimeoutId = setTimeout(monitorClipboard, opt.poll)
-		else pollRunning = false
-	}).catch(e => {
+	} catch (error) {
 		lastClip = ""
-		pollTimeoutId = setTimeout(monitorClipboard, opt.poll)
-		console.error(e)
-	})
+		console.error(error)
+	}
 }
+
+// Function to get the LAN address
+function getIpAddr() {
+	const os = require('os');
+	const ifaces = os.networkInterfaces();
+	let address;
+
+	Object.keys(ifaces).forEach(ifname => {
+		ifaces[ifname].forEach(iface => {
+			if (iface.family === 'IPv4' && !iface.internal) {
+				address = iface.address;
+			}
+		});
+	});
+	return `${address}`;
+}
+
 // #end

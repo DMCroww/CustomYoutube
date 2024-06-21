@@ -4,7 +4,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Player</title>
+	<title>Custom YouTube Player</title>
+	<script src="js/youtubeAPI.js"></script>
 	<link href="css/style.css" rel="stylesheet">
 	<link rel="icon" href='favicon.ico'>
 </head>
@@ -27,9 +28,9 @@
 	<div id="connect" class="show">
 		<h1>Interface mode:</h1>
 		<h3>Manual:</h3>
-		<p>Manually paste youtube links into provided field on left side. <br>Only player functionality enabled. (more info <a href=help.html#manual>here</a>)</p>
+		<p>Manually paste youtube links into provided field on left side. <br>Only player functionality enabled. (more info <a href=help.html>here</a>)</p>
 		<h3>Automated:</h3>
-		<p>Enables automatic detection of copied youtube links and provides Discord presence (shows what you're watching)<br>Requires local stript running in Node.js (more info <a href=help.html#local>here</a>)</p>
+		<p>Enables automatic detection of copied youtube links and provides Discord presence (shows what you're watching)<br>Requires local stript running in Node.js (more info <a href=help.html>here</a>)</p>
 		<div>
 			<button onclick="setMode('manual')">Manual</button>
 			<button onclick="setMode('auto')">Automated</button>
@@ -43,6 +44,15 @@
 				<input id="mode" type="checkbox" checked="true">
 				<span>Automated</span>
 			</div>
+			<label for="sounds">Enable sounds?</label>
+			<input id="sounds" type="checkbox" checked="true">
+			<label for="vol">Sounds volume (%)</label>
+			<div>
+				<input id="vol" type="range" min="0.1" max="1" step="0.1" oninput="this.parentElement.querySelector('#volVal').innerText=Math.floor(parseFloat(this.value)*100)+'%'">
+				<span id="volVal"></span>
+			</div>
+		</div>
+		<div id="scriptOpt">
 			<label for="rpc">Enable Discord presence?</label>
 			<input id="rpc" type="checkbox" checked="true">
 			<label for="rpcIdle">Show idle status?</label>
@@ -52,17 +62,15 @@
 				<input id="rpcIdleTo" type="number" min="0" max="60" step="1">
 				<span>minutes</span>
 			</div>
-			<label for="sounds">Enable sounds?</label>
-			<input id="sounds" type="checkbox" checked="true">
-			<label for="vol">Sounds volume (%)</label>
-			<div>
-				<input id="vol" type="range" min="0.1" max="1" step="0.1" oninput="this.parentElement.querySelector('#volVal').innerText=Math.floor(parseFloat(this.value)*100)+'%'">
-				<span id="volVal"></span>
-			</div>
 			<label for="clip">Clipboard interval</label>
 			<div>
-				<input id="clip" type="number" min="0" max="600" step="0.2">
+				<input id="clip" type="number" min="0" max="600" step="0.5">
 				<span>seconds</span>
+			</div>
+			<label for="remote">Enable Remote Control</label>
+			<div>
+				<input id="remote" type="checkbox" checked="false">
+				<input id="remoteip" type="text">
 			</div>
 		</div>
 		<div id="buttons">
@@ -75,20 +83,21 @@
 
 	<div id="queue">
 		<div>
-			<label for="auoplay">Autoplay</label>
-			<input id="autoplay" type="checkbox" checked="true" onchange="toggleAutoplay(this)">
+			<div>
+				<label for="auoplay">Autoplay</label>
+				<input id="autoplay" type="checkbox" checked="true" onchange="toggleAutoplay(this)">
+			</div>
 			<input id="manual" class="disabled" oninput="processLink(this)" placeholder="Paste URL">
+		</div>
+		<div id="list">
 			<p>Queued IDs:</p>
-			<div id="list"></div>
 		</div>
 	</div>
 
 
-	<script src="js/youtubeAPI.js"></script>
-	<script src="js/base-func.js"></script>
 	<script src="js/setup.js"></script>
-	<script src="js/socket.js"></script>
 	<script src="js/videoProcess.js"></script>
+	<script src="js/socket.js"></script>
 	<script src="js/controls.js"></script>
 </body>
 

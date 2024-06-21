@@ -2,6 +2,8 @@ body {
 	margin: 0;
 	padding: 0;
 	background-color: black;
+	font-size: 3vh;
+	color: white;
 }
 
 #ytb {
@@ -17,9 +19,10 @@ body {
 
 #connect {
 	position: fixed;
-	top: 100vh;
-	left: 30vw;
-	width: 40vw;
+	top: 150vh;
+	left: 50vw;
+	width: 50vw;
+	max-height: 85vh;
 	overflow: auto;
 	transition: top 250ms ease-in-out;
 	border: .25em #222 solid;
@@ -27,7 +30,7 @@ body {
 	background-color: #080808;
 	color: white;
 	padding: 1em 1ch;
-	font-size: 2vh;
+	transform: translate(-50%, -50%);
 }
 
 #connect div {
@@ -45,6 +48,7 @@ body {
 	border-radius: 1em;
 	font-size: inherit;
 	background-color: #0a0;
+	border: .1em solid transparent;
 }
 
 #connect button:first-child {
@@ -52,11 +56,11 @@ body {
 }
 
 #connect button:hover {
-	border: .1em solid white;
+	border-color: white;
 }
 
 #connect.show {
-	top: 20vh;
+	top: 50vh;
 }
 
 #queue {
@@ -65,9 +69,9 @@ body {
 	right: 100vw;
 	transition: transform 500ms cubic-bezier(0.5, 0.5, 0, 1);
 	transform: translateX(3.5ch);
-	font-size: 3vh;
 	color: #888;
 	padding: 1em 3.3ch 1em 0;
+	width: max-content;
 }
 
 #queue:hover,
@@ -80,12 +84,13 @@ body {
 	display: none
 }
 
-#queue div:not(#list) {
+#queue>div {
 	display: flex;
 	flex-direction: column;
 	background-color: #000;
 	border-right: 0.3ch solid magenta;
-	padding-left: 1ch;
+	padding: .25em 1ch;
+	align-items: center;
 }
 
 #queue input {
@@ -97,9 +102,22 @@ body {
 	color: #AAA;
 }
 
-#queue #list {
+#list {
 	display: flex;
 	flex-direction: column;
+}
+
+#list p {
+	margin: 0;
+}
+
+#list button {
+	background-color: #222;
+	color: #FFF;
+	padding: .25em 1ch;
+	margin: .5em 0;
+	width: fit-content;
+	border-radius: 2em;
 }
 
 #controls {
@@ -134,46 +152,110 @@ body {
 	padding: .1em .1ch;
 }
 
+
+
+
+
+
+
+
+
 #settings {
 	position: fixed;
-	top: 100vh;
+	top: 150vh;
 	left: 50vw;
+	max-height: 80vh;
 	transition: top 250ms ease-in-out;
 	transition-property: top, opacity;
 	opacity: 0;
-	transform: translateX(-50%);
+	transform: translate(-50%, -50%);
 	border: .25em grey solid;
 	border-radius: 1em;
 	padding: 1em 2ch;
 	display: flex;
 	flex-direction: column;
-	width: 40vw;
+	width: 70vw;
 	background-color: #111;
 	font-size: 1.5em;
 }
 
 #settings.show {
-	top: 20vh;
+	top: 50vh;
 	opacity: 1;
 }
 
 #settings * {
-	color: white;
 	font-size: inherit;
 }
 
-#settings #opt {
+#opt,
+#scriptOpt {
 	display: grid;
 	grid-template-columns: 3fr 2fr;
 	row-gap: .25em;
-	align-items: baseline;
+	align-items: center;
 }
 
-#settings input {
+input {
 	background-color: #222;
-	width: 4ch;
 	margin: 0;
+	color: white;
 }
+
+input[type=range] {
+	width: 40%;
+}
+
+#settings #opt div {
+	display: flex;
+}
+
+#settings #buttons {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 1em;
+}
+
+button .red {
+	color: #F88;
+	background-color: #400;
+}
+
+button .green {
+	color: #8F8;
+	background-color: #040;
+}
+
+#echo {
+	position: fixed;
+	top: 10vh;
+	left: 50vw;
+	transform: translateX(-50%);
+	opacity: 0;
+	transition: opacity 250ms ease-in-out 5s;
+	color: white;
+	background: radial-gradient(black, black 40%, transparent 70%);
+	padding: 1em 5ch;
+	font-size: 2em;
+	visibility: hidden;
+}
+
+#echo.show {
+	opacity: 1;
+	transition: none;
+	visibility: visible;
+}
+
+:focus {
+	outline: none;
+}
+
+
+
+
+
+
+
 
 input[type=checkbox],
 input[type=range] {
@@ -194,19 +276,19 @@ input[type=range]::-webkit-slider-thumb {
 
 input[type=range]::-webkit-slider-thumb:hover,
 input[type=checkbox]:hover::before {
-	background-color: #A0A;
+	background-color: #A0A !important
 }
 
 input[type=checkbox] {
-	width: 2em;
-	background-color: #A44;
+	width: 2em !important;
+	background-color: #A44 !important;
 	position: relative;
 	top: .2em;
 	transition: background-color 150ms;
 }
 
 input[type=checkbox]:checked {
-	background-color: #0A0;
+	background-color: #0A0 !important;
 }
 
 input[type=checkbox]::before {
@@ -241,42 +323,4 @@ input[type=range]::-webkit-slider-thumb:active {
 
 input[type=range]::-webkit-slider-runnable-track {
 	background: #0000;
-}
-
-#settings #buttons {
-	display: flex;
-	justify-content: flex-end;
-	margin-top: 1em;
-}
-
-#settings .red {
-	color: #F88;
-	background-color: #400;
-}
-
-#settings .green {
-	color: #8F8;
-	background-color: #040;
-}
-
-#echo {
-	position: fixed;
-	top: 10vh;
-	left: 50vw;
-	transform: translateX(-50%);
-	opacity: 0;
-	transition: opacity 250ms ease-in-out 5s;
-	color: white;
-	background: radial-gradient(black, black 40%, transparent 70%);
-	padding: 1em 5ch;
-	font-size: 2em;
-}
-
-#echo.show {
-	opacity: 1;
-	transition: none;
-}
-
-:focus {
-	outline: none;
 }

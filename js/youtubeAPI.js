@@ -4,10 +4,11 @@ try {
 	var ttPolicy = window.trustedTypes.createPolicy("youtube-widget-api", { createScriptURL: function (x) { return x } })
 	scriptUrl = ttPolicy.createScriptURL(scriptUrl)
 } catch (e) { }
+
 var YT
 if (!window["YT"]) YT = { loading: 0, loaded: 0 }
-var YTConfig
 
+var YTConfig
 if (!window["YTConfig"]) YTConfig = { "host": "http://ytb.dmcroww.tech" }
 
 if (!YT.loading) {

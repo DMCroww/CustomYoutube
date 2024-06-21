@@ -3,31 +3,42 @@ function toggleFS() {
 	else document.body.requestFullscreen()
 }
 
-function saveSettings(close) {
+function saveSettings(close, sound = true) {
 	if (wsFails == 0) {
-		settings.rpcOn = opts[1].checked
-		settings.rpcIdle = opts[2].checked
-		settings.rpcIdleTo = parseFloat(opts[3].value)
-		settings.soundEnabled = opts[4].checked
-		settings.soundVol = parseFloat(opts[5].value)
-		settings.poll = parseFloat(opts[6].value) * 1000
+		settings.mode = opts.mode.checked ? "auto" : "manual"
+		settings.rpcOn = opts.rpcOn.checked
+		settings.rpcIdle = opts.rpcIdle.checked
+		settings.rpcIdleTo = parseFloat(opts.rpcIdleTo.value)
+		settings.soundEnabled = opts.sounds.checked
+		settings.soundVol = parseFloat(opts.vol.value)
+		settings.poll = parseFloat(opts.poll.value) * 1000
+		settings.remote = opts.remote.checked
+
 		soundsEl.forEach(e => e.volume = settings.soundVol)
 		window.localStorage.setItem("settings", JSON.stringify(settings))
-		setMode(opts[0].checked ? "auto" : "manual")
-		send(settings, "settings")
+		setMode(settings.mode)
+		send("server", socketClientId, settings, "settings")
 		if (close) settingsEl.className = ''
-		echo("Settings saved.", "confirm")
+		echo("Settings saved.", sound ? "confirm" : false)
 	} else {
 		echo("Settings not saved. WebSocket disconnected.", "error")
 	}
 }
+
 function setMode(mode) {
-	settings.mode = mode
 	connectEl.className = ''
 	modes[mode]()
 }
+
+function toggleAutoplay(el) {
+	settings.autoplay = el.checked
+	saveSettings(true, false)
+}
+
 const modes = {
 	manual: () => {
+		scriptOptEl.className = 'hide'
+		updateQueueList()
 		if (socket) {
 			socket.onclose = (event) => { }
 			socket.close()
@@ -35,22 +46,21 @@ const modes = {
 		}
 		manualEl.className = ''
 		manualEl.querySelector('input').focus()
-		opts[0].checked = false
+		opts.mode.checked = false
 
 		setTimeout(() => {
 			if (IDs.length && !playing) {
+				if (!player) setPlayer()
 				playing = true
 				playVid(IDs[0])
 			}
 		}, 100)
 	},
 	auto: () => {
+		updateQueueList()
 		manualEl.className = 'disabled'
-		opts[0].checked = true
+		scriptOptEl.className = ''
+		opts.mode.checked = true
 		if (!socket) connect()
 	}
-}
-function toggleAutoplay(el) {
-	settings.autoplay = el.checked
-	saveSettings(true)
 }
